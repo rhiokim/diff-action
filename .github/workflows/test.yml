@@ -13,12 +13,35 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           npm install
-      - run: |
           npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./
+
+      - name: Equal
+        id: diff1
+        uses: ./
         with:
-          milliseconds: 1000
+          first: '{"foo": "bar"}'
+          second: '{"foo": "bar"}'
+
+      - name: Different
+        id: diff2
+        uses: ./
+        with:
+          first: '{"foo": "bar"}'
+          second: '{"foo": "zoo"}'
+
+      - name: Different2
+        id: diff3
+        uses: ./
+        with:
+          first: '{"foo": "bar", "zoo": 1}'
+          second: '{"foo": "zoo", "zoo": 2}'
+
+      - name: Output
+        run: |
+          echo "Equal: ${{ steps.diff1.outputs.diff}}"
+          echo "Different: ${{ steps.diff2.outputs.diff}}"
+          echo "Different2: ${{ steps.diff3.outputs.diff}}"
